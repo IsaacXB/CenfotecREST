@@ -8,19 +8,27 @@ namespace REST.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult<List<User>> GetUsers()
+        private List<User> _users = new List<User>() 
         {
-            return Ok(new List<User> { 
-                new User { 
-                    Id = 1, 
-                    Name = "Test",
-                    Email = "test@gmail.com",
+            new User {
+                    Id = 1,
+                    Name = "José",
+                    Email = "jvdg@gmail.com",
                     EmailConfirmed = "No",
                     Password = "abc123$."
-                    
-                } 
-            });
+                },
+            new User {
+                    Id = 2,
+                    Name = "Rebeca",
+                    Email = "rebeca@gmail.com",
+                    EmailConfirmed = "No",
+                    Password = "abc123$."
+                },
+        };
+        [HttpGet]
+        public List<User> GetUsers()
+        {
+            return _users;
         }
     }
 }
