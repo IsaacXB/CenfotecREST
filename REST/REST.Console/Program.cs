@@ -109,4 +109,106 @@ using (var client = new HttpClient())
     { Console.WriteLine(response.StatusCode); }
 }
 
-Console.ReadLine();
+Console.WriteLine("---------Homework 1 ------------");
+
+url = "https://localhost:7190/api/Book/GetBooks/";
+url2 = "https://localhost:7190/api/Book/GetBook/";
+url3 = "https://localhost:7190/api/Book/";
+
+
+using (var client = new HttpClient())
+{
+    // GetBooks (HttpGet)
+    var response = client.GetAsync(url).Result;
+
+    if (response.IsSuccessStatusCode)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+
+        var books = JsonSerializer.Deserialize<List<Book>>(content, options);
+
+        foreach (var book in books)
+        {
+            Console.WriteLine("Book Id: " + book.Id + ", Name: " + book.Name + ", Author: " + book.Author + "Description: " + book.Description);
+        }
+    }
+    else
+    { Console.WriteLine(response.StatusCode); }
+
+
+    // Get specific book (Id = 2)
+    response = client.GetAsync(url2 + 2).Result;
+
+    if (response.IsSuccessStatusCode)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+
+        var book = JsonSerializer.Deserialize<Book>(content, options);
+
+        if (book != null)
+            Console.WriteLine("Book Id: " + book.Id + ", Name: " + book.Name + ", Author: " + book.Author + "Description: " + book.Description);
+    }
+    else
+    { Console.WriteLine(response.StatusCode); }
+
+
+    // Add book (HttpPost)
+    Book book1 = new Book
+    {
+        Id = 0,
+        Name = "Harry Potter and the Chamber of Secrets, Book 2",
+        Author = "J.K. Rowling",
+        Description = "There is a plot, Harry Potter. A plot to make most terrible things happen at Hogwarts School of Witchcraft and Wizardry this year"
+    };
+
+    response = client.PostAsJsonAsync(url3, book1).Result;
+
+    if (response.IsSuccessStatusCode)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+
+        var user = JsonSerializer.Deserialize<Book>(content, options);
+
+        if (user != null)
+            Console.WriteLine("New Book Added successfully. Book Id: " + book1.Id + ", Name: " + book1.Name + ", Author: " + book1.Author + "Description: " + book1.Description);
+
+    }
+    else
+    { Console.WriteLine(response.StatusCode); }
+
+
+    // Update Book (HttpPut)
+
+    response = client.PutAsJsonAsync(url3 + 1, book1).Result;
+
+    if (response.IsSuccessStatusCode)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+
+        book1 = JsonSerializer.Deserialize<Book>(content, options);
+
+        if (book1 != null)
+            Console.WriteLine("New Book Updated successfully. Book Id: " + book1.Id + ", Name: " + book1.Name + ", Author: " + book1.Author + "Description: " + book1.Description);
+
+    }
+    else
+    { Console.WriteLine(response.StatusCode); }
+
+    // Delete Book (HttpDelete)
+
+    response = client.DeleteAsync(url3 + 1).Result;
+
+    if (response.IsSuccessStatusCode)
+    {
+        var content = await response.Content.ReadAsStringAsync();
+
+        var book2= JsonSerializer.Deserialize<Book>(content, options);
+
+        if (book2 != null && book2.Id == 0)
+            Console.WriteLine("User Deleted successfully. Id: " + 1);
+    }
+    else
+    { Console.WriteLine(response.StatusCode); }
+    Console.ReadLine();
+
+}
