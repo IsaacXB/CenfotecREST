@@ -5,11 +5,8 @@ namespace REST.Database.Context
 {
     public class UserContext : DbContext
     {
-        public UserContext(DbContextOptions options) : base(options)
-        {
-            
-        }
+        public UserContext(DbContextOptions options) : base(options) {}
 
-        public DbSet<User> Usuarios { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
