@@ -21,9 +21,25 @@ builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(
 
 builder.Services.AddScoped<IUserService, UserService>();
 
+var _myCors = "AllowedOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: _myCors, policy =>
+    {
+        //policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+        //    .AllowAnyHeader().AllowAnyMethod();
+
+        policy.WithOrigins("https://localhost:7007")
+            .AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 app.ErrorHandler();
+
+app.UseCors(_myCors);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
