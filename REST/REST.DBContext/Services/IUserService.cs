@@ -13,5 +13,15 @@ namespace REST.Database.Services
         public void PutUser(User user);
 
         public void DeleteUser(int id);
+
+
+        // Async methods
+        public Task<User> GetUserByIdAsync(int id);
+
+        public Task PostUserAsync(User user);
+
+        public Task PutUserAsync(User user);
+
+        public Task DeleteUserAsync(int id);
     }
 }

@@ -1,4 +1,5 @@
-﻿using REST.Database.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using REST.Database.Context;
 using REST.Database.Models;
 
 namespace REST.Database.Services
@@ -18,7 +19,16 @@ namespace REST.Database.Services
             {
                 _userContext.Remove(userToBeDeleted);
                 _userContext.SaveChanges();
+            }
+        }
 
+        public async Task DeleteUserAsync(int id)
+        {
+            var userToBeDeleted = await _userContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+            if (userToBeDeleted != null)
+            {
+                _userContext.Remove(userToBeDeleted);
+                await _userContext.SaveChangesAsync();
             }
         }
 
@@ -27,15 +37,26 @@ namespace REST.Database.Services
            return _userContext.Users.FirstOrDefault(x => x.Id == id); 
         }
 
+        public async Task<User> GetUserByIdAsync(int id)
+        {
+            return await _userContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public IEnumerable<User> GetUsers()
         {
-            return (IEnumerable<User>)_userContext.Users;
+            return _userContext.Users;
         }
 
         public void PostUser(User user)
         {
             _userContext.Users.Add(user);
             _userContext.SaveChanges(); 
+        }
+
+        public async Task PostUserAsync(User user)
+        {
+            await _userContext.Users.AddAsync(user);
+            await _userContext.SaveChangesAsync();
         }
 
         public void PutUser(User user)
@@ -45,9 +66,19 @@ namespace REST.Database.Services
             {
                 _userContext.Entry(userToBeUpdated).CurrentValues.SetValues(user);
                 _userContext.SaveChanges();
-
             }
 
+        }
+
+        public async Task PutUserAsync(User user)
+        {
+            var userToBeUpdated = await _userContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+            if (userToBeUpdated != null)
+            {
+                _userContext.Entry(userToBeUpdated).CurrentValues.SetValues(user);
+                await _userContext.SaveChangesAsync();
+
+            }
         }
     }
 }
