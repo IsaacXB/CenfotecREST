@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using REST.Database.Models;
 using REST.Database.Services;
 
@@ -94,5 +95,34 @@ namespace REST.API._2.Controllers
                 await _userService.DeleteUserAsync(user.Id);
             }
         }
+
+        [HttpGet("ReturnError")]
+        public IActionResult ReturnError() 
+        { 
+            throw new Exception("Exception Handling Example");
+        }
+
+        [Route("/ErrorDevelopment")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IActionResult ErrorHandlerDevelopment([FromServices] IHostEnvironment hostEnvironment)
+        {
+            if (!hostEnvironment.IsDevelopment())
+            {
+                return NotFound();
+            }
+            var exceptionHandlerFeature = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            return Problem(
+                detail: exceptionHandlerFeature.Error.StackTrace,
+                title: exceptionHandlerFeature.Error.Message
+                );
+        }
+
+        [Route("/Error")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public IActionResult ErrorHandler()
+        {
+            return Problem();
+        }
+
     }
 }
