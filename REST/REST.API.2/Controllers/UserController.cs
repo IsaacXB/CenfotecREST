@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using REST.Database.Models;
 using REST.Database.Services;
 
 namespace REST.API._2.Controllers
 {
+    //[EnableCors("Policy1")]
     [Route("api/users")]
     [ApiController]
     public class UserController : Controller
@@ -16,6 +18,7 @@ namespace REST.API._2.Controllers
                 _userService = userService;                
         }
 
+        //[DisableCors]
         [HttpGet]
         public IActionResult Index()
         {
@@ -86,6 +89,7 @@ namespace REST.API._2.Controllers
         //    }
         //}
 
+        //[EnableCors("Policy1")]
         [HttpDelete]
         public async Task DeleteAsync([FromBody] User user)
         {
@@ -96,6 +100,7 @@ namespace REST.API._2.Controllers
             }
         }
 
+        //[EnableCors("Policy2")]
         [HttpGet("ReturnError")]
         public IActionResult ReturnError() 
         { 
