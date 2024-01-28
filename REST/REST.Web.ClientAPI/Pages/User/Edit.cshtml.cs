@@ -1,36 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using REST.Database.Models;
 using REST.Web.ClientAPI.Data;
 
 namespace REST.Web.ClientAPI.Pages.User
 {
     public class EditModel : PageModel
     {
-        private readonly REST.Web.ClientAPI.Data.RESTWebClientAPIContext _context;
+        private readonly REST.Web.ClientAPI.Data.RESTWebClientAPIContext _context = new RESTWebClientAPIContext();
 
-        public EditModel(REST.Web.ClientAPI.Data.RESTWebClientAPIContext context)
-        {
-            _context = context;
-        }
 
         [BindProperty]
         public REST.Database.Models.User User { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var user =  await _context.User.FirstOrDefaultAsync(m => m.Id == id);
+            var user =  await _context.GetAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -48,30 +39,8 @@ namespace REST.Web.ClientAPI.Pages.User
                 return Page();
             }
 
-            _context.Attach(User).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(User.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _context.PutAsync(User);
             return RedirectToPage("./Index");
-        }
-
-        private bool UserExists(int id)
-        {
-          return (_context.User?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

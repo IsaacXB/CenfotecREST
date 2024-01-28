@@ -69,8 +69,18 @@ namespace REST.API._2.Controllers
         //    }
         //}
 
-        [HttpPut]
-        public async Task PutAsync([FromBody] User user)
+        //[HttpPut]
+        //public async Task PutAsync([FromBody] User user)
+        //{
+        //    var userToBeUpdated = await _userService.GetUserByIdAsync(user.Id);
+        //    if (userToBeUpdated != null)
+        //    {
+        //        await _userService.PutUserAsync(user);
+        //    }
+        //}
+
+        [HttpPut("{id}")]
+        public async Task PutAsync(int id, [FromBody] User user)
         {
             var userToBeUpdated = await _userService.GetUserByIdAsync(user.Id);
             if (userToBeUpdated != null)
@@ -90,13 +100,23 @@ namespace REST.API._2.Controllers
         //}
 
         //[EnableCors("Policy1")]
-        [HttpDelete]
-        public async Task DeleteAsync([FromBody] User user)
+        //[HttpDelete]
+        //public async Task DeleteAsync([FromBody] User user)
+        //{
+        //    var userToBeUpdated = await _userService.GetUserByIdAsync(user.Id);
+        //    if (userToBeUpdated != null)
+        //    {
+        //        await _userService.DeleteUserAsync(user.Id);
+        //    }
+        //}
+
+        [HttpDelete("{id}")]
+        public async Task DeleteAsync(int id)
         {
-            var userToBeUpdated = await _userService.GetUserByIdAsync(user.Id);
+            var userToBeUpdated = await _userService.GetUserByIdAsync(id);
             if (userToBeUpdated != null)
             {
-                await _userService.DeleteUserAsync(user.Id);
+                await _userService.DeleteUserAsync(id);
             }
         }
 

@@ -12,23 +12,18 @@ namespace REST.Web.ClientAPI.Pages.User
 {
     public class DetailsModel : PageModel
     {
-        private readonly REST.Web.ClientAPI.Data.RESTWebClientAPIContext _context;
+        private readonly REST.Web.ClientAPI.Data.RESTWebClientAPIContext _context = new RESTWebClientAPIContext();
 
-        public DetailsModel(REST.Web.ClientAPI.Data.RESTWebClientAPIContext context)
-        {
-            _context = context;
-        }
-
-      public REST.Database.Models.User User { get; set; } = default!; 
+      public REST.Database.Models.User User { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.User == null)
+            if (id == null || _context == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.User.FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _context.GetAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -39,5 +34,6 @@ namespace REST.Web.ClientAPI.Pages.User
             }
             return Page();
         }
+
     }
 }
