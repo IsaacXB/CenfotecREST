@@ -1,9 +1,10 @@
 
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using REST.API._2.Middleware;
 using REST.Database.Context;
 using REST.Database.Services;
+using System.Reflection;
 using static System.Net.Mime.MediaTypeNames;
 
 
@@ -14,7 +15,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "My API",
+        Description = "ASP.NET Core Wen API to manage users data",
+        TermsOfService = new Uri("https://www.google.com/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "Isaac Chaves",
+            Url = new Uri("https://www.google.com/contact")
+        },
+        License = new OpenApiLicense
+        {
+            Name = "License",
+            Url = new Uri("https://www.google.com/license")
+        }
+    });
+    var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+});
 
 builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DBConnection")));
@@ -93,8 +115,16 @@ if (app.Environment.IsDevelopment())
     //});
     
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger( options =>
+    {
+        options.RouteTemplate = "/myapi/sawgger/{documentname}/swagger.json";
+    });
+    app.UseSwaggerUI( options =>
+    {
+        //options.SwaggerEndpoint("./swagger/v1/swagger.json", "v1");
+        options.SwaggerEndpoint("/myapi/sawgger/v1/swagger.json", "My API Version: 1");
+        options.RoutePrefix = "myapi/swagger";
+    });
 }
 else
 {

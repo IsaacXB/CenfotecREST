@@ -79,6 +79,13 @@ namespace REST.API._2.Controllers
         //    }
         //}
 
+
+        /// <summary>
+        /// Updates User Information
+        /// </summary>
+        /// <param name="id">User Id</param>
+        /// <param name="user">Model Instance</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task PutAsync(int id, [FromBody] User user)
         {
