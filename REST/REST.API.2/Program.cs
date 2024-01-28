@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "My API",
-        Description = "ASP.NET Core Wen API to manage users data",
+        Description = "ASP.NET Core Web API to manage users data",
         TermsOfService = new Uri("https://www.google.com/terms"),
         Contact = new OpenApiContact
         {
@@ -124,6 +124,14 @@ if (app.Environment.IsDevelopment())
         //options.SwaggerEndpoint("./swagger/v1/swagger.json", "v1");
         options.SwaggerEndpoint("/myapi/sawgger/v1/swagger.json", "My API Version: 1");
         options.RoutePrefix = "myapi/swagger";
+        options.InjectStylesheet("/css/swagger-ui/mystyle.css");
+
+        options.SupportedSubmitMethods(
+            new Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod[]
+            {
+                Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Get,
+                Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Put
+            });
     });
 }
 else
@@ -134,6 +142,8 @@ else
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

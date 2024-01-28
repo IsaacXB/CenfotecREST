@@ -9,6 +9,7 @@ namespace REST.API._2.Controllers
     //[EnableCors("Policy1")]
     [Route("api/users")]
     [ApiController]
+    //[Produces("application/json")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -19,6 +20,10 @@ namespace REST.API._2.Controllers
         }
 
         //[DisableCors]
+        /// <summary>
+        /// Gets all users
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Index()
         {
@@ -36,6 +41,12 @@ namespace REST.API._2.Controllers
         //    return Ok(user);
         //}
 
+
+        /// <summary>
+        /// Get user data by Id
+        /// </summary>
+        /// <param name="id">User Id</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> IndexAsync(int id)
         {
@@ -52,6 +63,25 @@ namespace REST.API._2.Controllers
         //{
         //    _userService.PostUser(user);
         //}
+
+        /// <summary>
+        /// Creates a user
+        /// </summary>
+        /// <param name="user">User Information</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Sample Request:
+        /// 
+        ///     POST /User
+        ///     {
+        ///         "Name": "David",
+        ///         "Email": "David@gmail.com",
+        ///         "Password": "1234@",
+        ///         "EmailConfirmed": "No"
+        ///     }
+        /// </remarks>
+        /// <response code="200">User created successfully</response>
+        /// <response code="400">An error has ocurred, user not created.</response>
 
         [HttpPost]
         public async Task PostAsync([FromBody] User user)
@@ -83,7 +113,7 @@ namespace REST.API._2.Controllers
         /// <summary>
         /// Updates User Information
         /// </summary>
-        /// <param name="id">User Id</param>
+        /// <param name="id">User Id to be updated</param>
         /// <param name="user">Model Instance</param>
         /// <returns></returns>
         [HttpPut("{id}")]
@@ -117,6 +147,11 @@ namespace REST.API._2.Controllers
         //    }
         //}
 
+        /// <summary>
+        /// Deletes a User
+        /// </summary>
+        /// <param name="id">User Id to be deleted</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task DeleteAsync(int id)
         {
@@ -127,6 +162,12 @@ namespace REST.API._2.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Returns an error exception
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception">Exception Details</exception>
         //[EnableCors("Policy2")]
         [HttpGet("ReturnError")]
         public IActionResult ReturnError() 
