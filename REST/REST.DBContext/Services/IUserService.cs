@@ -28,5 +28,7 @@ namespace REST.Database.Services
 
         public User? GetUserByName(string userName);
 
+        public AuthResponse Authenticate(AuthRequest data);
+
     }
 }

@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using REST.API._2.Controllers;
 using REST.Database.Context;
 using REST.Database.Models;
 using REST.Database.Services;
+using System.Text;
 
 namespace REST.API._2.Tests
 {
@@ -11,6 +13,8 @@ namespace REST.API._2.Tests
     {
         private readonly UserController _userController;
         private readonly IUserService _userService;
+        private readonly AppSettings _appSettings;
+
 
         public UserTests()
         {

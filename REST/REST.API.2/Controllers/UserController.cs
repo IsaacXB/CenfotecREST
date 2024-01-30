@@ -174,8 +174,11 @@ namespace REST.API._2.Controllers
         //[EnableCors("Policy2")]
         [HttpGet("ReturnError")]
         public IActionResult ReturnError() 
-        { 
-            throw new Exception("Exception Handling Example");
+        {
+            return new JsonResult("An error has occurred, please contact your system administrator.")
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
         }
 
         [Route("/ErrorDevelopment")]
@@ -201,21 +204,20 @@ namespace REST.API._2.Controllers
         }
 
 
-        //[HttpPost("login")]
-        //public IActionResult Authenticate([FromBody] AuthRequest data)
-        //{
+        [HttpPost("login")]
+        public IActionResult Authenticate([FromBody] AuthRequest data)
+        {
 
-        //    var userResponse = _userService.Authenticate(data);
+            var userResponse = _userService.Authenticate(data);
 
-        //    if (userResponse == null)
-        //    {
-        //        return BadRequest("Credenciales incorrectas.");
-        //    }
+            if (userResponse == null)
+            {
+                return BadRequest("Incorrect credentials.User name and password combination are not valid.");
+            }
 
-        //    return Ok(userResponse);
+            return Ok(userResponse);
 
-
-        //}
+        }
 
         /// <summary>
         /// Gets user authentication claims - Requires authorization
@@ -246,6 +248,8 @@ namespace REST.API._2.Controllers
             };
 
         }
+
+
 
 
     }

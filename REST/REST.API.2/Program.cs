@@ -1,12 +1,17 @@
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using REST.API._2.Middleware;
 using REST.API._2.Security;
 using REST.Database.Context;
+using REST.Database.Models;
 using REST.Database.Services;
 using System.Reflection;
+using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 
 
@@ -47,6 +52,31 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAuthentication("BasicAuthentication")
     .AddScheme<AuthenticationSchemeOptions, AuthHandler>("BasicAuthentication", null);
+
+var appSettingsSect = builder.Configuration.GetSection("AppSettings");
+builder.Services.Configure<AppSettings>(appSettingsSect);
+
+// Configuración del JWT
+var appSettings = appSettingsSect.Get<AppSettings>();
+// Lo codificamos en una matriz de Bytes
+var key = Encoding.ASCII.GetBytes(appSettings.Key);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(opt =>
+{
+    opt.RequireHttpsMetadata = false;
+    // Agregar tiempo de vida al token
+    opt.SaveToken = true;
+    opt.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
 
 var _myCors = "AllowedOrigins";
 
@@ -91,34 +121,34 @@ app.UseCors();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.UseExceptionHandler("/ErrorDevelopment");
-    //app.UseExceptionHandler(exceptionHandlerApp =>
-    //{
-    //    exceptionHandlerApp.Run(async context =>
-    //    {
-    //        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-    //        context.Response.ContentType = Text.Plain;
+    app.UseExceptionHandler("/ErrorDevelopment");
+    app.UseExceptionHandler(exceptionHandlerApp =>
+    {
+        exceptionHandlerApp.Run(async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = Text.Plain;
 
-    //        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
-    //        if (exceptionHandlerFeature != null)
-    //        {
-    //            switch (exceptionHandlerFeature.Error)
-    //            {
-    //                case FileNotFoundException:
-    //                    await context.Response.WriteAsync("File Not Found.");
-    //                    break;
-    //                default:
-    //                    await context.Response.WriteAsync("An error has ocurred.");
-    //                    break;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            await context.Response.WriteAsync("An error has ocurred.");
-    //        }
-    //    });
-    //});
-    
+            var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+            if (exceptionHandlerFeature != null)
+            {
+                switch (exceptionHandlerFeature.Error)
+                {
+                    case FileNotFoundException:
+                        await context.Response.WriteAsync("File Not Found.");
+                        break;
+                    default:
+                        await context.Response.WriteAsync("An error has ocurred.");
+                        break;
+                }
+            }
+            else
+            {
+                await context.Response.WriteAsync("An error has ocurred.");
+            }
+        });
+    });
+
 
     app.UseSwagger( options =>
     {
@@ -135,7 +165,9 @@ if (app.Environment.IsDevelopment())
             new Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod[]
             {
                 Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Get,
-                Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Put
+                Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Put,
+                Swashbuckle.AspNetCore.SwaggerUI.SubmitMethod.Post
+
             });
     });
 }

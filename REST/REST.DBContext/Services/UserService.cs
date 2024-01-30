@@ -1,17 +1,33 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using REST.Database.Context;
 using REST.Database.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace REST.Database.Services
 {
     public class UserService : IUserService
     {
         public UserContext _userContext;
+        private readonly AppSettings _appSettings;
+
 
         public UserService(UserContext userContext) 
         {
             _userContext = userContext;
-        } 
+
+        }
+
+        public UserService(UserContext userContext, IOptions<AppSettings> appSettings)
+        {
+            _userContext = userContext;
+            _appSettings = appSettings.Value;
+
+        }
+
         public void DeleteUser(int id)
         {
             var userToBeDeleted = _userContext.Users.FirstOrDefault(x => x.Id == id);
@@ -89,6 +105,48 @@ namespace REST.Database.Services
         public User? GetUserByName(string userName)
         {
             return _userContext.Users.FirstOrDefault(x => x.Name == userName);
+        }
+
+        public AuthResponse Authenticate(AuthRequest data)
+        {
+
+            AuthResponse authResponse = new AuthResponse();
+
+            var usuario = _userContext.Users.FirstOrDefault(u =>
+                u.Name == data.userID && u.Password == data.Password);
+
+            if (usuario == null)
+            {
+                return null;
+
+            }
+
+            authResponse.userID = usuario.Name;
+            // Token
+            authResponse.Token = GetTokenKey(usuario);
+            return authResponse;
+        }
+
+        private string GetTokenKey(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Key);
+            var tokenDesc = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(
+                    new Claim[] {
+                        new Claim(ClaimTypes.NameIdentifier, user.Name.ToString()),
+                        new Claim(ClaimTypes.Name, user.Name)
+                       }
+                    ),
+                // Expira en 60 días
+                Expires = DateTime.UtcNow.AddDays(30),
+                // Encrypta la información
+                SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDesc);
+            return tokenHandler.WriteToken(token);
         }
     }
 }
