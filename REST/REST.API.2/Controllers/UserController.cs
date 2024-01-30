@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using REST.Database.Models;
 using REST.Database.Services;
+using System.Security.Claims;
 
 namespace REST.API._2.Controllers
 {
@@ -152,6 +154,7 @@ namespace REST.API._2.Controllers
         /// </summary>
         /// <param name="id">User Id to be deleted</param>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task DeleteAsync(int id)
         {
@@ -196,6 +199,54 @@ namespace REST.API._2.Controllers
         {
             return Problem();
         }
+
+
+        //[HttpPost("login")]
+        //public IActionResult Authenticate([FromBody] AuthRequest data)
+        //{
+
+        //    var userResponse = _userService.Authenticate(data);
+
+        //    if (userResponse == null)
+        //    {
+        //        return BadRequest("Credenciales incorrectas.");
+        //    }
+
+        //    return Ok(userResponse);
+
+
+        //}
+
+        /// <summary>
+        /// Gets user authentication claims - Requires authorization
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Auth")]
+        [Authorize]
+        public ActionResult GetAuth()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                // Lista los valores
+                IEnumerable<Claim> claims = identity.Claims;
+
+                var claim = identity.FindFirst(
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+
+                if (claim != null)
+                {
+                    return new JsonResult(claim.Value);
+                }
+            }
+
+            return new JsonResult("Unauthorized")
+            {
+                StatusCode = StatusCodes.Status401Unauthorized
+            };
+
+        }
+
 
     }
 }

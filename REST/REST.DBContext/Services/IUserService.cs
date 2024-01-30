@@ -23,5 +23,10 @@ namespace REST.Database.Services
         public Task PutUserAsync(User user);
 
         public Task DeleteUserAsync(int id);
+
+        public bool ValidateUser(string userId, string password);
+
+        public User? GetUserByName(string userName);
+
     }
 }

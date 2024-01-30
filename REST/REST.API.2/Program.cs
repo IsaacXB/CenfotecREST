@@ -1,7 +1,9 @@
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using REST.API._2.Middleware;
+using REST.API._2.Security;
 using REST.Database.Context;
 using REST.Database.Services;
 using System.Reflection;
@@ -42,6 +44,9 @@ builder.Services.AddDbContext<UserContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DBConnection")));
 
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddAuthentication("BasicAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, AuthHandler>("BasicAuthentication", null);
 
 var _myCors = "AllowedOrigins";
 
@@ -140,6 +145,8 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

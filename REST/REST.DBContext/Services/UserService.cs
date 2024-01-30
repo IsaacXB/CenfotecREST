@@ -80,5 +80,15 @@ namespace REST.Database.Services
 
             }
         }
+
+        public bool ValidateUser(string userId, string password)
+        {
+            return _userContext.Users.Where(x => x.Name.Equals(userId) && x.Password.Equals(password)).Count() > 0;   
+        }
+
+        public User? GetUserByName(string userName)
+        {
+            return _userContext.Users.FirstOrDefault(x => x.Name == userName);
+        }
     }
 }
