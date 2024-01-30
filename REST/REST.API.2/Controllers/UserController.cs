@@ -172,6 +172,7 @@ namespace REST.API._2.Controllers
         /// <returns></returns>
         /// <exception cref="Exception">Exception Details</exception>
         //[EnableCors("Policy2")]
+        [EnableCors("Policy1")]
         [HttpGet("ReturnError")]
         public IActionResult ReturnError() 
         {

@@ -80,33 +80,23 @@ builder.Services.AddAuthentication(options =>
 
 var _myCors = "AllowedOrigins";
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy(name: _myCors, policy =>
-//    {
-//        //policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
-//        //    .AllowAnyHeader().AllowAnyMethod();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: _myCors, policy =>
+    {
+        //policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+        //    .AllowAnyHeader().AllowAnyMethod();
 
-//        policy.WithOrigins("https://localhost:7007")
-//            .AllowAnyHeader().AllowAnyMethod();
-//    });
-//});
+        policy.WithOrigins("https://localhost:7007")
+            .AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Policy1", policy =>
     {
         policy.WithOrigins("https://localhost:7007");
-    });
-
-    options.AddPolicy("Policy2", policy =>
-    {
-        policy.WithOrigins("https://mysite1.com").WithMethods("GET");
-    });
-
-    options.AddPolicy("Policy2", policy =>
-    {
-        policy.WithOrigins("https://mysite2.com").WithMethods("POST","PUT","DELETE");
     });
 });
 
